@@ -23,3 +23,14 @@ for f in f_list:
 		h = file_hash.copy()
 		h.update(g.read())
 		file_hashes.append(h.hexdigest())
+
+for h in file_hashes:
+	files[h] = { "name" : f_list[file_hashes.index(h)],
+               "tags" : t_list }
+
+for t in t_list:
+	tags[t] = file_hashes
+
+out = { "files" : files,
+        "tags" : tags }
+print(json.dumps(out,indent=2))
