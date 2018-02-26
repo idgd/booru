@@ -33,4 +33,6 @@ for t in t_list:
 
 out = { "files" : files,
         "tags" : tags }
-print(json.dumps(out,indent=2))
+
+with open("db.json","w") as db:
+	json.dump(out,db,indent=2)
