@@ -1,37 +1,64 @@
 import sys
+import os
 import json
 from hashlib import sha256
 
+### needed variables
+
+# generator
+file_hash = sha256()
+
+# input
 args = sys.argv[1:]
-files = {}
-tags = {}
-out = {}
-with open("db.json") as f:
-	i = json.load(f)
+if not os.path.exists("db.json"):
+	i = {"tags" : { "" : [] },
+       "files" : { "" : { "" : "", "" : []  } } }
+	with open("db.json","w+") as f:
+		json.dump(i,f,indent=2)
+else:
+	with open("db.json") as f:
+		i = json.load(f)
 
-if "-t" and "-f" in args:
-	file_hash = sha256()
+# utility
+files = i["files"]
+tags = i["tags"]
+file_hashes = []
 
-	t_index = args.index("-t") + 1
-	f_index = args.index("-f") + 1
-	t_list = args[t_index : f_index - 1]
-	f_list = args[f_index:]
+d = ""
+a = {"t" : [],
+     "f" : [],
+     "s" : []}
 
-	if not t_list or not f_list:
+for f in args:
+	if f == "-t":
+		d = "t"
+	elif f == "-f":
+		d = "f"
+	elif f == "-s":
+		d = "s"
+	else:
+		a[d].append(f)
+
+### functions
+
+def t():
+	if not a["t"]:
 		print("Tags:")
 		for f in i["tags"].keys():
 			print("  ", f)
+	return
+
+def f():
+	if not a["f"]:
 		print("Files:")
 		for f in i["files"].values():
 			print("  ", f["name"])
+	return
 
-	for f in i["files"].keys():
-		print(f)
+def tf():
 
 	if i["files"].keys():
-		file_hashes = list(i["files"].keys())
-	else:
-		file_hashes = []
+		file_hashes += list(i["files"].keys())
 
 	for f in f_list:
 		with open(f,"rb") as g:
@@ -51,13 +78,13 @@ if "-t" and "-f" in args:
 
 	with open("db.json","w") as db:
 		json.dump(out,db,indent=2)
-elif "-t" in args:
-	print("")
-elif "-f" in args:
-	print("")
-elif "-s" in args:
-	print("")
-elif "-h" in args:
+
+	return
+
+def s():
+	return
+
+def h():
 	print("""-t tag tag1 ... -f file file1 ... - associates listed tags with listed files
 -t -f - lists all tags and all files
 -t tag tag1 ... - lists all files associated with tags, adds tags if they don't exist
@@ -65,7 +92,3 @@ elif "-h" in args:
 -f file file1 ... - lists all files with each's tags
 -f - lists all files
 -s - searches for tag""")
-elif not args:
-	print("booru version 0.1\ntagging software")
-else:
-	print("invalid input\n-h for help")
