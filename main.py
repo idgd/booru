@@ -12,7 +12,7 @@ file_hash = sha256()
 args = sys.argv[1:]
 if not os.path.exists("db.json"):
 	i = {"tags" : { "" : [] },
-       "files" : { "" : { "" : "", "" : []  } } }
+       "files" : { "" : { "name" : "", "tags" : []  } } }
 	with open("db.json","w+") as f:
 		json.dump(i,f,indent=2)
 else:
@@ -20,9 +20,8 @@ else:
 		i = json.load(f)
 
 # utility
-files = i["files"]
 tags = i["tags"]
-file_hashes = []
+files = i["files"]
 
 d = ""
 a = {"t" : [],
@@ -41,45 +40,52 @@ for f in args:
 
 ### functions
 
-def t():
-	if not a["t"]:
-		print("Tags:")
-		for f in i["tags"].keys():
-			print("  ", f)
-	return
+def t_empty():
+	print("Tags:")
+	for f in i["tags"].keys():
+		print("  ", f)
 
-def f():
-	if not a["f"]:
-		print("Files:")
-		for f in i["files"].values():
-			print("  ", f["name"])
-	return
+def f_empty():
+	print("Files:")
+	for f in i["files"].values():
+		print("  ", f["name"])
 
 def tf():
-
-	if i["files"].keys():
-		file_hashes += list(i["files"].keys())
-
-	for f in f_list:
+	h_to_append = []
+	for f in a["f"]:
 		with open(f,"rb") as g:
 			h = file_hash.copy()
 			h.update(g.read())
-			file_hashes.append(h.hexdigest())
+			new_hash = h.hexdigest()
+			h_to_append.append(new_hash)
+			files[new_hash] = { "tags" : a["t"], "name" : f}
 
-	for h in file_hashes:
-		files[h] = { "name" : f_list[file_hashes.index(h)],
-                 "tags" : t_list }
+	for t in a["t"]:
+		tags[t] = h_to_append
 
-	for t in t_list:
-		tags[t] = file_hashes
+	w()
 
-	out = { "files" : files,
-          "tags" : tags }
+def t():
+	for f in a["t"]:
+		if f in tags:
+			for g in tags[f]:
+				print(files[g]["name"])
+		else:
+			tags[f] = []
 
-	with open("db.json","w") as db:
-		json.dump(out,db,indent=2)
+		w()
 
-	return
+def f():
+	h_check = []
+	for f in a["f"]:
+		with open(f,"rb") as g:
+			h = file_hash.copy()
+			h.update(g.read())
+			h_check.append(h.hexdigest())
+
+	for f in h_check:
+		if f in files:
+			print("Name: " + str(files[f]['name']) + "\nTags: " + str(files[f]['tags']) + "\n")
 
 def s():
 	return
@@ -92,3 +98,10 @@ def h():
 -f file file1 ... - lists all files with each's tags
 -f - lists all files
 -s - searches for tag""")
+
+def w():
+	i["tags"] = tags
+	i["files"] = files
+
+	with open("db.json","w") as f:
+		json.dump(i,f,indent=2)
