@@ -40,6 +40,18 @@ for f in args:
 
 ### functions
 
+def check():
+	if not a["t"] and "-t" in args:
+		t_empty()
+	if not a["f"] and "-f" in args:
+		f_empty()
+	if a["f"] and "-f" in args and "-t" not in args:
+		f()
+	if a["t"] and "-t" in args and "-f" not in args:
+		t()
+	if a["f"] and "-f" in args and a["t"] and "-t" in args:
+		tf()
+
 def t_empty():
 	print("Tags:")
 	for f in i["tags"].keys():
@@ -105,3 +117,5 @@ def w():
 
 	with open("db.json","w") as f:
 		json.dump(i,f,indent=2)
+
+check()
