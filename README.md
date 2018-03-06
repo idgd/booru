@@ -37,11 +37,4 @@ Creates a json dotfile in home. The structure is:
 
 # todo
 
-* tags and files to json dotfile
-* list all tags
-* search tags
-* add new tags
-* list all files
-* search files by tag
-* add tags to file
-* hashing capabilities
+* update hashes
