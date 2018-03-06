@@ -70,7 +70,7 @@ def tf():
 			h.update(g.read())
 			new_hash = h.hexdigest()
 			h_to_append.append(new_hash)
-			files[new_hash] = { "tags" : a["t"], "name" : f}
+			files[new_hash] = { "tags" : a["t"], "name" : os.path.abspath(str(f))}
 
 	for t in a["t"]:
 		tags[t] = h_to_append
@@ -112,6 +112,8 @@ def h():
 -s - searches for tag""")
 
 def w():
+	print(files)
+	print(tags)
 	i["tags"] = tags
 	i["files"] = files
 
